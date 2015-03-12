@@ -39,8 +39,8 @@
 (define (longitude-origin zone)
   (+ (- (* (- zone 1) 6) 180) 3))
 
-(: utm-easting (-> Real Real (Vector Number Number)))
-(define (utm-easting longitude latitude)
+(: utm (-> Real Real (Vector Number Number)))
+(define (utm longitude latitude)
   (let* ([a 6378137.0]
          [eccentricity-squared 0.00660438]
          [scale-factor 0.9996]
