@@ -39,7 +39,7 @@
 (define (longitude-origin zone)
   (+ (- (* (- zone 1) 6) 180) 3))
 
-(: utm (-> Real Real (Vector Number Number)))
+(: utm (-> Real Real (Vector Real Real)))
 (define (utm longitude latitude)
   (let* ([a 6378137.0]
          [eccentricity-squared 0.00660438]
@@ -63,44 +63,33 @@
                (- (+ (- (* (- 1
                               (/ eccentricity-squared 4)
                               (* 3
-                                 eccentricity-squared
-                                 eccentricity-squared
+                                 (sqr eccentricity-squared)
                                  (/ 1 64))
                               (* 5
-                                 (* eccentricity-squared
-                                    eccentricity-squared
-                                    eccentricity-squared
+                                 (* (expt eccentricity-squared 3)
                                     (/ 1 256))))
                            (degrees->radians latitude))
                         (* (+ (* 3
                                  eccentricity-squared
                                  (/ 1 8))
                               (* 3
-                                 eccentricity-squared
-                                 eccentricity-squared
+                                 (sqr eccentricity-squared)
                                  (/ 1 32))
                               (* 45
-                                 eccentricity-squared
-                                 eccentricity-squared
-                                 eccentricity-squared
+                                 (expt eccentricity-squared 3)
                                  (/ 1 1024)))
                            (sin (* 2
                                    (degrees->radians latitude)))))
                      (* (+ (* 15
-                              eccentricity-squared
-                              eccentricity-squared
+                              (sqr eccentricity-squared)
                               (/ 1 256))
                            (* 45
-                              eccentricity-squared
-                              eccentricity-squared
-                              eccentricity-squared
+                              (expt eccentricity-squared 3)
                               (/ 1 1024)))
                         (sin (* 4
                                 (degrees->radians latitude)))))
                   (* (* 35
-                        eccentricity-squared
-                        eccentricity-squared
-                        eccentricity-squared
+                        (expt eccentricity-squared 3)
                         (/ 1 3072))
                      (sin (* 6
                              (degrees->radians latitude))))))]
@@ -110,20 +99,14 @@
                            (* (+ 1
                                  (* -1 T)
                                  C)
-                              A
-                              A
-                              A
+                              (expt A 3)
                               (/ 1 6))
                            (* (+ 5
                                  (* -18 T)
                                  (* T T)
                                  (* 72 C)
                                  (* -58 eccentricity-prime-squared))
-                              A
-                              A
-                              A
-                              A
-                              A
+                              (expt A 5)
                               (/ 1 120))))
                      500000.0)]
          [northing (* scale-factor
@@ -136,27 +119,19 @@
                                      (* -1 T)
                                      (* 9 C)
                                      (* 4 C C))
-                                  A
-                                  A
-                                  A
-                                  A
+                                  (expt A 4)
                                   (/ 1 24))
                                (* (+ 61
                                      (* -58 T)
                                      (* T T)
                                      (* 600 C)
                                      (* -330 eccentricity-prime-squared))
-                                  A
-                                  A
-                                  A
-                                  A
-                                  A
-                                  A
+                                  (expt A 6)
                                   (/ 1.0 720.0))))))])
-         (vector easting
-                 (if (< latitude 0.0)
-                     (+ 10000000.0 northing)
-                     northing))))
+    (vector (real-part easting)
+            (real-part (if (< latitude 0.0)
+                         (+ 10000000.0 northing)
+                         northing)))))
 
 ;; Reference:
 ;; http://forum.worldwindcentral.com/showthread.php?9863-C-code-to-convert-DD-to-UTM-here-it-is-!!
