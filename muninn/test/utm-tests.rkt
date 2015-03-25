@@ -3,7 +3,7 @@
 (provide utm-zone-tests
          utm-tests)
 
-(require "../data/utm.rkt")
+(require "../utm.rkt")
 (require rackunit)
 
 ;; (: utm-zone-tests TestSuite)
